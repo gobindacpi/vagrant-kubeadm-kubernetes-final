@@ -1,0 +1,41 @@
+[200~Install NFS Server on Ubuntu 22.04
+=======================================
+On NFS Server 
+=======================
+apt update -y
+apt install nfs-kernel-server -y
+
+mkdir -p /mnt/NFS-BANK
+chown -R nobody:nogroup /mnt/NFS-BANK/
+chmod 777 /mnt/NFS-BANK/
+
+vim /etc/exports
+/mnt/NFS-BANK 192.168.56.0/24(rw,sync,no_subtree_check)   ;;save and exit
+
+exportfs -a
+systemctl restart nfs-kernel-server
+
+Validity Check
+=========================
+root@master-node:~# showmount -a
+All mount points on master-node:
+root@master-node:~# showmount -e
+Export list for master-node:
+/mnt/NFS-BANK 192.168.56.0/24
+
+For Client VM/Server
+==========================
+apt install nfs-common
+
+mkdir -p /mnt/nfs_bank
+mount 192.168.56.50:/mnt/NFS-BANK /mnt/nfs_bank
+
+Validity check from client 
+root@worker-node01:~# showmount -e 192.168.56.50
+Export list for 192.168.56.50:
+/mnt/NFS-BANK 192.168.56.0/24
+
+root@worker-node02:~#  showmount -e 192.168.56.50
+Export list for 192.168.56.50:
+/mnt/NFS-BANK 192.168.56.0/24
+
